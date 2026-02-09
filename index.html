@@ -21,7 +21,7 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            user-select: none; /* Prevents text selection while dragging */
+            user-select: none;
         }
 
         body {
@@ -32,7 +32,6 @@
             overscroll-behavior: none;
         }
 
-        /* --- HEADER --- */
         header {
             background: var(--primary);
             color: white;
@@ -47,7 +46,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
-            user-select: text; /* Allow text selection in the main content */
+            user-select: text;
         }
 
         .section-title {
@@ -63,7 +62,6 @@
         }
         .center-wrapper { text-align: center; }
 
-        /* --- PRODUCT CARDS --- */
         .product-grid {
             display: flex;
             gap: 2rem;
@@ -127,28 +125,7 @@
             gap: 8px;
         }
         .btn:hover { background: #2980b9; }
-        .btn::after { content: '▶'; font-size: 0.8em; }
 
-        /* --- FEATURES --- */
-        .features-section {
-            background: white;
-            padding: 3rem 1rem;
-            margin-top: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .feature-item h3 { color: var(--primary); margin-bottom: 0.5rem; }
-        .feature-item p { font-size: 0.9rem; color: #666; }
-
-        /* --- SIMULATION OVERLAY --- */
         #sim-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -167,44 +144,72 @@
         }
 
         .hud-box {
-            background: rgba(0, 0, 0, 0.85);
-            border: 1px solid #444;
-            color: white;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            color: #333;
             padding: 15px;
-            border-radius: 4px;
+            border-radius: 8px;
             max-width: 400px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            pointer-events: auto;
         }
 
-        .hud-title { color: var(--accent); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-        .hud-desc { font-size: 0.85rem; margin-bottom: 10px; color: #ccc; }
+        .hud-title { color: var(--primary); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .hud-desc { font-size: 0.85rem; margin-bottom: 10px; color: #666; }
+
+        #basic-controls {
+            display: none;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .hud-btn {
+            background: white;
+            color: var(--primary);
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            flex: 1;
+            transition: all 0.2s;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .hud-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .hud-btn.alert-active { background: var(--warning); color: white; border-color: var(--warning); animation: pulseBtn 0.5s infinite; }
+        
+        @keyframes pulseBtn { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         .hud-status {
             font-family: monospace;
             font-size: 1.1rem;
             font-weight: bold;
             padding-top: 5px;
-            border-top: 1px solid #555;
             display: flex;
             justify-content: space-between;
         }
 
         .status-good { color: var(--success); }
         .status-bad { color: var(--warning); animation: flash 0.5s infinite; }
+        .status-track { color: var(--accent); }
 
         @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         #close-sim {
             position: absolute;
             top: 20px; right: 20px;
-            background: var(--warning);
-            color: white;
+            background: white;
+            color: #333;
             border: none;
             padding: 8px 16px;
-            border-radius: 4px;
+            border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
             z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .instruction {
@@ -216,8 +221,14 @@
             font-size: 0.9rem;
             pointer-events: none;
             animation: pulse 2s infinite;
+            background: rgba(255,255,255,0.8);
+            padding: 5px;
+            max-width: 300px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 20px;
         }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
         canvas { display: block; touch-action: none; }
     </style>
@@ -263,40 +274,23 @@
             </div>
         </div>
 
-        <div class="features-section">
-            <div class="center-wrapper">
-                <h2 class="section-title" style="font-size: 1.5rem; margin-top:0; border:none;">Key Features</h2>
-            </div>
-            <div class="feature-grid">
-                <div class="feature-item">
-                    <h3>Portable and Small</h3>
-                    <p>Lightweight and compact design (fits in a pocket or under a vehicle) for discreet, on-the-go use.</p>
-                </div>
-                <div class="feature-item">
-                    <h3>Secure</h3>
-                    <p>Features tamper-proof casing, encrypted data transmission, and geofencing alerts to prevent unauthorized movement.</p>
-                </div>
-                <div class="feature-item">
-                    <h3>Easy Setup</h3>
-                    <p>Plug-and-play installation with magnetic attachment or simple pairing via Bluetooth/app, no tools or wiring needed.</p>
-                </div>
-                <div class="feature-item">
-                    <h3>Simple Interface</h3>
-                    <p>User-friendly app controls for setup, monitoring, and alerts, with minimal learning curve.</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="sim-overlay">
         <button id="close-sim" onclick="stopSim()">EXIT DEMO</button>
         
         <div id="ui-layer">
-            <div class="hud-box">
+            <div class="hud-box" id="hud-box">
                 <div class="hud-title" id="hud-title">SYSTEM READY</div>
                 <div class="hud-desc" id="hud-desc">Initializing...</div>
+                
+                <div id="basic-controls">
+                    <button id="btn-track" class="hud-btn" onclick="toggleTracking()">TRACK</button>
+                    <button id="btn-alarm" class="hud-btn" onclick="toggleManualAlarm()">ALARM</button>
+                </div>
+
                 <div class="hud-status">
-                    <span>STATUS:</span>
+                    <span id="status-label">STATUS:</span>
                     <span id="status-text" class="status-good">CONNECTED</span>
                 </div>
             </div>
@@ -307,13 +301,17 @@
     </div>
 
     <script>
-        // --- VARIABLES ---
         const overlay = document.getElementById('sim-overlay');
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
+        const hudBox = document.getElementById('hud-box');
         const hudTitle = document.getElementById('hud-title');
         const hudDesc = document.getElementById('hud-desc');
         const statusText = document.getElementById('status-text');
+        const statusLabel = document.getElementById('status-label');
+        const basicControls = document.getElementById('basic-controls');
+        const btnTrack = document.getElementById('btn-track');
+        const btnAlarm = document.getElementById('btn-alarm');
 
         let width, height, centerX, centerY;
         let animationId;
@@ -322,13 +320,12 @@
         let ripples = [];
         let lastBeepTime = 0;
 
-        // Device State
         const device = { x: 0, y: 0, r: 18, dragging: false };
+        let isTrackingActive = false;
+        let isManualAlarmActive = false;
 
-        // Audio Context (Web Audio API)
         let audioCtx;
 
-        // --- AUDIO ENGINE ---
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -340,28 +337,33 @@
 
         function playBeep() {
             if (!audioCtx) return;
-            
-            // Create Oscillator and Gain
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
-            // Sound Config (High-pitched Beep)
             osc.type = 'square'; 
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-            osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1); // Drop pitch
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
+            osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1); 
 
-            // Volume Config
             gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
 
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.15); // Stop after 150ms
+            osc.stop(audioCtx.currentTime + 0.15);
         }
 
-        // --- INPUT HANDLERS (MOUSE + TOUCH) ---
+        function toggleTracking() {
+            isTrackingActive = !isTrackingActive;
+            btnTrack.className = isTrackingActive ? "hud-btn active" : "hud-btn";
+        }
+
+        function toggleManualAlarm() {
+            initAudio();
+            isManualAlarmActive = !isManualAlarmActive;
+            btnAlarm.className = isManualAlarmActive ? "hud-btn alert-active" : "hud-btn";
+        }
+
         function getPos(e) {
             if (e.touches && e.touches.length > 0) {
                 return { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -370,7 +372,7 @@
         }
 
         function handleStart(e) {
-            initAudio(); // Initialize audio on first touch/click
+            initAudio(); 
             const pos = getPos(e);
             const dist = Math.hypot(pos.x - device.x, pos.y - device.y);
             if (dist < device.r * 2) {
@@ -383,26 +385,19 @@
                 const pos = getPos(e);
                 device.x = pos.x;
                 device.y = pos.y;
-                // Prevent scrolling while dragging
                 if (e.cancelable) e.preventDefault(); 
             }
         }
 
-        function handleEnd() {
-            device.dragging = false;
-        }
+        function handleEnd() { device.dragging = false; }
 
-        // Mouse Events
         canvas.addEventListener('mousedown', handleStart);
         window.addEventListener('mousemove', handleMove);
         window.addEventListener('mouseup', handleEnd);
-
-        // Touch Events (Passive: false required to prevent scroll)
         canvas.addEventListener('touchstart', handleStart, {passive: false});
         canvas.addEventListener('touchmove', handleMove, {passive: false});
         canvas.addEventListener('touchend', handleEnd);
 
-        // --- APP LOGIC ---
         function resize() {
             width = window.innerWidth;
             height = window.innerHeight;
@@ -411,27 +406,37 @@
             centerX = width / 2;
             centerY = height / 2;
         }
-
         window.addEventListener('resize', resize);
 
         function startSim(selectedMode) {
             mode = selectedMode;
             overlay.style.display = 'flex';
-            initAudio(); // Try to wake audio up
+            initAudio();
             resize();
             
-            // Reset Device Position
             device.x = centerX + 50;
             device.y = centerY;
+            isTrackingActive = false;
+            isManualAlarmActive = false;
+            btnTrack.className = "hud-btn";
+            btnAlarm.className = "hud-btn";
             
             if (mode === 'MINI') {
                 hudTitle.innerText = "SecureLink Mini";
-                hudDesc.innerText = "Simulating Bluetooth Range (10-30m). Drag device away to test.";
-                zoneRadius = Math.min(width, height) * 0.25; // Smaller
+                hudDesc.innerText = "Bluetooth Proximity (10-30m). Auto-alarm enabled.";
+                zoneRadius = Math.min(width, height) * 0.25;
+                basicControls.style.display = 'none';
+                hudBox.style.background = "rgba(0,0,0,0.85)";
+                hudBox.style.color = "white";
+                hudTitle.style.color = "#3498db";
             } else {
                 hudTitle.innerText = "SecureLink Basic+";
-                hudDesc.innerText = "Simulating GPS Geofence. Drag device outside to trigger satellite tracking.";
-                zoneRadius = Math.min(width, height) * 0.35; // Larger
+                hudDesc.innerText = "Global GPS Mode. Tracking active everywhere.";
+                zoneRadius = 0;
+                basicControls.style.display = 'flex';
+                hudBox.style.background = "rgba(255,255,255,0.95)";
+                hudBox.style.color = "#333";
+                hudTitle.style.color = "#2c3e50";
             }
 
             animate(0);
@@ -442,83 +447,110 @@
             cancelAnimationFrame(animationId);
         }
 
-        function animate(timestamp) {
-            // Draw Background
-            ctx.fillStyle = '#0f172a';
+        function drawMapBackground() {
+            ctx.fillStyle = '#e5e5e5';
             ctx.fillRect(0, 0, width, height);
+            
+            for(let x=0; x<width; x+=100) {
+                for(let y=0; y<height; y+=100) {
+                    if ((x+y)%200 === 0) {
+                        ctx.fillStyle = '#dcdcdc';
+                        ctx.fillRect(x+10, y+10, 80, 80);
+                    } else {
+                         ctx.fillStyle = '#c8e6c9';
+                         ctx.fillRect(x+10, y+10, 80, 80);
+                    }
+                }
+            }
 
-            // Draw Grid
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            for(let i=0; i<width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,height); ctx.stroke(); }
-            for(let i=0; i<height; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(width,i); ctx.stroke(); }
-
-            // Draw Safe Zone
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 15;
             ctx.beginPath();
-            ctx.arc(centerX, centerY, zoneRadius, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([15, 10]);
+            for(let x=0; x<=width; x+=100) { ctx.moveTo(x,0); ctx.lineTo(x,height); }
+            for(let y=0; y<=height; y+=100) { ctx.moveTo(0,y); ctx.lineTo(width,y); }
             ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.fillStyle = 'rgba(52, 152, 219, 0.05)';
-            ctx.fill();
+        }
 
-            // Draw "User/Phone" Center
+        function animate(timestamp) {
+            if (mode === 'MINI') {
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                for(let i=0; i<width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,height); ctx.stroke(); }
+                for(let i=0; i<height; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(width,i); ctx.stroke(); }
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, zoneRadius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([15, 10]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.05)';
+                ctx.fill();
+            } else {
+                drawMapBackground();
+            }
+
             ctx.beginPath();
             ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
             ctx.fillStyle = '#3498db';
             ctx.fill();
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = mode === 'MINI' ? 'white' : '#333';
             ctx.font = '10px Arial';
             ctx.textAlign = 'center';
             ctx.fillText("YOU", centerX, centerY + 4);
 
-            // Check Distance
             const dx = device.x - centerX;
             const dy = device.y - centerY;
             const dist = Math.hypot(dx, dy);
-            const isSafe = dist < zoneRadius;
 
-            if (isSafe) {
-                // Safe State
-                statusText.innerText = "SECURE";
-                statusText.className = "status-good";
-                
-                // Connection Line
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.lineTo(device.x, device.y);
-                ctx.strokeStyle = '#27ae60';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+            if (mode === 'MINI') {
+                const isSafe = dist < zoneRadius;
+                statusLabel.innerText = "STATUS:";
+                if (isSafe) {
+                    statusText.innerText = "SECURE";
+                    statusText.className = "status-good";
+                    drawLink('#27ae60');
+                } else {
+                    statusText.innerText = "ALARM ACTIVE";
+                    statusText.className = "status-bad";
+                    triggerVisualRipple();
+                    if (timestamp - lastBeepTime > 400) { playBeep(); lastBeepTime = timestamp; }
+                }
             } else {
-                // Alarm State
-                statusText.innerText = "ALARM ACTIVE";
-                statusText.className = "status-bad";
-
-                // Visual Alarm Ripple
-                if (Math.random() > 0.85) {
-                    ripples.push({x: device.x, y: device.y, r: 10, a: 1});
+                if (isTrackingActive) {
+                    statusLabel.innerText = "DISTANCE:";
+                    statusText.innerText = Math.floor(dist) + "m";
+                    statusText.className = "status-track";
+                    drawLink('#3498db');
+                } else {
+                    statusLabel.innerText = "STATUS:";
+                    statusText.innerText = "GPS ACTIVE";
+                    statusText.className = "status-good";
                 }
 
-                // Audio Alarm Trigger (Every 400ms)
-                if (timestamp - lastBeepTime > 400) {
-                    playBeep();
-                    lastBeepTime = timestamp;
+                if (isManualAlarmActive) {
+                    triggerVisualRipple();
+                    if (timestamp - lastBeepTime > 400) { playBeep(); lastBeepTime = timestamp; }
                 }
             }
 
-            // Draw Device (The Drag Target)
             ctx.beginPath();
             ctx.arc(device.x, device.y, device.r, 0, Math.PI * 2);
-            ctx.fillStyle = isSafe ? 'white' : '#e74c3c';
+            if (mode === 'MINI') {
+                ctx.fillStyle = (dist >= zoneRadius) ? '#e74c3c' : 'white';
+                ctx.strokeStyle = 'white';
+            } else {
+                ctx.fillStyle = '#e74c3c';
+                ctx.strokeStyle = 'white';
+            }
             ctx.fill();
-            ctx.strokeStyle = 'white';
             ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Animate Ripples
             for (let i = 0; i < ripples.length; i++) {
                 let r = ripples[i];
                 r.r += 2;
@@ -532,6 +564,21 @@
             }
 
             animationId = requestAnimationFrame(animate);
+        }
+
+        function drawLink(color) {
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(device.x, device.y);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function triggerVisualRipple() {
+            if (Math.random() > 0.85) {
+                ripples.push({x: device.x, y: device.y, r: 10, a: 1});
+            }
         }
     </script>
 </body>
